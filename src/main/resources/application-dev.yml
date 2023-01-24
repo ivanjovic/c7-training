@@ -2,3 +2,18 @@ spring:
   datasource:
     username: postgres
     password: postgres
+
+camunda:
+  bpm:
+    license-file: file:${HOME}/.camunda/licence.txt
+    admin-user:
+      id: demo
+      password: demo
+      firstName: Demo
+      lastName: Demo
+    filter:
+      create: All Tasks
+    client:
+      base-url: http://localhost:${server.port}/engine-rest
+      lock-duration: 20000
+      async-response-timeout: 60000

@@ -1,0 +1,33 @@
+{
+  "components": [
+    {
+      "text": "<h1> Console Selection </h1>",
+      "type": "text",
+      "id": "Field_1jxzkvm"
+    },
+    {
+      "text": "No unique console suggestion was possible. Please select one for the user:",
+      "type": "text",
+      "id": "Field_0iauw6g"
+    },
+    {
+      "label": "Select",
+      "type": "select",
+      "id": "Field_00ump8l",
+      "key": "selectedSuggestion",
+      "validate": {
+        "required": true
+      },
+      "valuesKey": "suggestions"
+    }
+  ],
+  "type": "default",
+  "id": "SelectConsoleFormID",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.5.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.18.0",
+  "schemaVersion": 5
+}

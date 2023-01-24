@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="console_suggestion" name="console_suggestion" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Web Modeler" exporterVersion="7257ccd" camunda:diagramRelationId="2641e2bc-50f8-4e8a-8db0-210be10b6129" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.1.0">
+  <decision id="Consosle_Suggestion_ID" name="Console_Suggestion">
+    <informationRequirement id="InformationRequirement_1m83o2c">
+      <requiredDecision href="#birthyear" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_1bqfula" hitPolicy="COLLECT">
+      <input id="Input_1" biodi:width="264">
+        <inputExpression id="InputExpression_1" typeRef="number">
+          <text>birthyear</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" name="suggestions" typeRef="string" />
+      <rule id="DecisionRule_01l9lua">
+        <inputEntry id="UnaryTests_0pro9zq">
+          <text>includes([1972..1980], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0xk2oq8">
+          <text>"Magnavox Odyssey"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_12uqina">
+        <inputEntry id="UnaryTests_0chc3bq">
+          <text>includes([1976..1992], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1hpm1s2">
+          <text>"Atari 2600"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_06m276u">
+        <inputEntry id="UnaryTests_0h4rpmi">
+          <text>includes([1983..2003], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1qk9sfn">
+          <text>"Nintendo Entertainment System (NES)"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0zby9pm">
+        <inputEntry id="UnaryTests_0e62hqr">
+          <text>includes([1987..2004], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1dehil0">
+          <text>"Sega"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1j5ub99">
+        <inputEntry id="UnaryTests_0whjdh4">
+          <text>includes([1993..2006], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0x4az1b">
+          <text>"Sony Playstation 1"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1d81si2">
+        <inputEntry id="UnaryTests_18l7wjj">
+          <text>includes([1998..2013], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0nam6la">
+          <text>"Sony Playstation 2"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_09z3s3l">
+        <inputEntry id="UnaryTests_01op494">
+          <text>includes([2005..2017], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1aje0xv">
+          <text>"Nintendo Wii"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0azd0sg">
+        <inputEntry id="UnaryTests_1v1of7y">
+          <text>includes([2012..2020], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0urv3qd">
+          <text>"Nintendo Switch"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0uwqykv">
+        <inputEntry id="UnaryTests_0cny0s2">
+          <text>includes([2020..9999], birthyear)</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_07tbboi">
+          <text>"Playstation 5"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="birthyear" name="birthyear">
+    <variable id="InformationItem_1wuecw8" name="birthyear" typeRef="number" />
+    <literalExpression id="LiteralExpression_1a3m2ws">
+      <text>date(birthday).year</text>
+    </literalExpression>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="Consosle_Suggestion_ID">
+        <dc:Bounds height="80" width="180" x="160" y="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="DMNShape_14po1bb" dmnElementRef="birthyear">
+        <dc:Bounds height="80" width="180" x="160" y="240" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="DMNEdge_1pwpv6i" dmnElementRef="InformationRequirement_1m83o2c">
+        <di:waypoint x="250" y="240" />
+        <di:waypoint x="250" y="180" />
+        <di:waypoint x="250" y="160" />
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
