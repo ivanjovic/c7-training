@@ -23,7 +23,7 @@ public class ValidateInputDelegate implements JavaDelegate {
 
     public void execute(DelegateExecution execution) throws Exception {
 
-        InputData input = execution.getVariableTyped(ProcessConstants.VAR_KEY_INPUT);
+        InputData input = (InputData) execution.getVariableTyped(ProcessConstants.VAR_KEY_INPUT, true).getValue();
 
         Set<ConstraintViolation<InputData>> violations = validator.validate(input);
         if (!violations.isEmpty()) {

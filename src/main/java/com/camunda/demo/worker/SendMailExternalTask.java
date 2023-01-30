@@ -19,7 +19,7 @@ public class SendMailExternalTask implements ExternalTaskHandler {
     @Override
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
 
-        MailType mailType = externalTask.getVariable(ProcessConstants.VAR_KEY_MAIL_TYPE);
+        MailType mailType = MailType.valueOf(externalTask.getVariable(ProcessConstants.VAR_KEY_MAIL_TYPE));
 
         switch (mailType) {
             case SUCCESS -> log.info("Sending Email, Suggestion is {}", getSuggestedConsole(externalTask));
@@ -38,7 +38,7 @@ public class SendMailExternalTask implements ExternalTaskHandler {
 
         String suggestion = externalTask.getVariable(ProcessConstants.VAR_KEY_SUGGESTION);
         if (StringUtils.isBlank(suggestion)) {
-            List<String> suggestions = externalTask.getVariableTyped(ProcessConstants.VAR_KEY_SUGGESTIONS);
+            List<String> suggestions = externalTask.getVariable(ProcessConstants.VAR_KEY_SUGGESTIONLIST);
             return suggestions.get(0);
         }
 

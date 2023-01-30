@@ -6,7 +6,7 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0o00q1m" sourceRef="CONSOLE_" targetRef="VALIDATE_INPUT_SERVICE_TASK" />
     <bpmn:sequenceFlow id="Flow_1a9c52m" sourceRef="VALIDATE_INPUT_SERVICE_TASK" targetRef="EVALUATE_CONSOLE_BUSINESS_RULE_TASK" />
-    <bpmn:businessRuleTask id="EVALUATE_CONSOLE_BUSINESS_RULE_TASK" name="Evaluate console" camunda:resultVariable="suggestionList" camunda:decisionRef="Consosle_Suggestion_ID" camunda:mapDecisionResult="collectEntries">
+    <bpmn:businessRuleTask id="EVALUATE_CONSOLE_BUSINESS_RULE_TASK" name="Evaluate console" camunda:asyncAfter="true" camunda:resultVariable="suggestionList" camunda:decisionRef="Consosle_Suggestion_ID" camunda:mapDecisionResult="collectEntries">
       <bpmn:incoming>Flow_1a9c52m</bpmn:incoming>
       <bpmn:outgoing>Flow_1ob226b</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -18,7 +18,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1ob226b" sourceRef="EVALUATE_CONSOLE_BUSINESS_RULE_TASK" targetRef="Gateway_03ddvs2" />
     <bpmn:sequenceFlow id="Flow_0hmcbw6" name="unique" sourceRef="Gateway_03ddvs2" targetRef="Gateway_18e5i56">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${suggestionList.size == 1}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${suggestionList.size() == 1}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="Gateway_18e5i56">
       <bpmn:incoming>Flow_0hmcbw6</bpmn:incoming>
@@ -26,7 +26,7 @@
       <bpmn:outgoing>Flow_0vj9hqs</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0jzhzmm" name="multiple" sourceRef="Gateway_03ddvs2" targetRef="ASSIGN_CONSOLE_USER_TASK">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${suggestionList.size &gt; 1}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${suggestionList.size() &gt; 1}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0vj9hqs" sourceRef="Gateway_18e5i56" targetRef="SEND_CONSOLE_SUGGESTION_SERVICE_TASK" />
     <bpmn:sequenceFlow id="Flow_1qt948s" sourceRef="ASSIGN_CONSOLE_USER_TASK" targetRef="Gateway_18e5i56" />
@@ -40,18 +40,11 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1wkduk2" sourceRef="SEND_REJECTION_MAIL_SERVICE_TASK" targetRef="NO_SUGGESTION_POSSIBLE_END_EVENT" />
     <bpmn:sequenceFlow id="Flow_0g82qow" name="none" sourceRef="Gateway_03ddvs2" targetRef="SEND_REJECTION_MAIL_SERVICE_TASK">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${suggestionList.size &lt;= 0}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${suggestionList.size() &lt;= 0}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="ASSIGN_CONSOLE_USER_TASK" name="select fitting console" camunda:formRef="SelectConsoleFormKey" camunda:formRefBinding="latest">
+    <bpmn:userTask id="ASSIGN_CONSOLE_USER_TASK" name="select fitting console" camunda:formRef="SelectConsoleFormID" camunda:formRefBinding="latest">
       <bpmn:extensionElements>
-        <camunda:inputOutput>
-          <camunda:inputParameter name="suggestions">
-            <camunda:script scriptFormat="FEEL">= for s in suggestionList return {
-    "label": s,
-    "value": s
-    }</camunda:script>
-          </camunda:inputParameter>
-        </camunda:inputOutput>
+        <camunda:taskListener delegateExpression="${transformSelectConsoleDataTaskListener}" event="create" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0jzhzmm</bpmn:incoming>
       <bpmn:outgoing>Flow_1qt948s</bpmn:outgoing>
@@ -63,7 +56,7 @@
     <bpmn:serviceTask id="SEND_CONSOLE_SUGGESTION_SERVICE_TASK" name="Send suggestion" camunda:asyncBefore="true" camunda:type="external" camunda:topic="sendMail">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="MAIL_TYPE">"SUCCESS"</camunda:inputParameter>
+          <camunda:inputParameter name="MAIL_TYPE">SUCCESS</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0vj9hqs</bpmn:incoming>
@@ -72,14 +65,14 @@
     <bpmn:serviceTask id="SEND_REJECTION_MAIL_SERVICE_TASK" name="Send rejection" camunda:asyncBefore="true" camunda:type="external" camunda:topic="sendMail">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="MAIL_TYPE">"REJECTION"</camunda:inputParameter>
+          <camunda:inputParameter name="MAIL_TYPE">REJECTION</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0m4unps</bpmn:incoming>
       <bpmn:incoming>Flow_0g82qow</bpmn:incoming>
       <bpmn:outgoing>Flow_1wkduk2</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="VALIDATE_INPUT_SERVICE_TASK" name="validate Input" camunda:asyncAfter="true" camunda:delegateExpression="#{validateInput}">
+    <bpmn:serviceTask id="VALIDATE_INPUT_SERVICE_TASK" name="validate Input" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:delegateExpression="#{validateInput}">
       <bpmn:incoming>Flow_0o00q1m</bpmn:incoming>
       <bpmn:outgoing>Flow_1a9c52m</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -105,6 +98,12 @@
       <bpmndi:BPMNShape id="Gateway_18e5i56_di" bpmnElement="Gateway_18e5i56" isMarkerVisible="true">
         <dc:Bounds x="855" y="105" width="50" height="50" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_064hc92_di" bpmnElement="NO_SUGGESTION_POSSIBLE_END_EVENT">
+        <dc:Bounds x="1262" y="462" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1251" y="505" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0uxxu38_di" bpmnElement="ASSIGN_CONSOLE_USER_TASK">
         <dc:Bounds x="700" y="270" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -113,12 +112,6 @@
         <dc:Bounds x="1262" y="112" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1255" y="155" width="51" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_064hc92_di" bpmnElement="NO_SUGGESTION_POSSIBLE_END_EVENT">
-        <dc:Bounds x="1262" y="462" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1251" y="505" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1vpstl5_di" bpmnElement="SEND_CONSOLE_SUGGESTION_SERVICE_TASK">
@@ -164,6 +157,24 @@
           <dc:Bounds x="631" y="283" width="38" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vj9hqs_di" bpmnElement="Flow_0vj9hqs">
+        <di:waypoint x="905" y="130" />
+        <di:waypoint x="1030" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qt948s_di" bpmnElement="Flow_1qt948s">
+        <di:waypoint x="800" y="310" />
+        <di:waypoint x="880" y="310" />
+        <di:waypoint x="880" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m4unps_di" bpmnElement="Flow_0m4unps">
+        <di:waypoint x="330" y="188" />
+        <di:waypoint x="330" y="480" />
+        <di:waypoint x="1030" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wkduk2_di" bpmnElement="Flow_1wkduk2">
+        <di:waypoint x="1130" y="480" />
+        <di:waypoint x="1262" y="480" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0g82qow_di" bpmnElement="Flow_0g82qow">
         <di:waypoint x="600" y="155" />
         <di:waypoint x="600" y="480" />
@@ -172,27 +183,9 @@
           <dc:Bounds x="603" y="413" width="25" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1qt948s_di" bpmnElement="Flow_1qt948s">
-        <di:waypoint x="800" y="310" />
-        <di:waypoint x="880" y="310" />
-        <di:waypoint x="880" y="155" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0vj9hqs_di" bpmnElement="Flow_0vj9hqs">
-        <di:waypoint x="905" y="130" />
-        <di:waypoint x="1030" y="130" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1r9qqy8_di" bpmnElement="Flow_1r9qqy8">
         <di:waypoint x="1130" y="130" />
         <di:waypoint x="1262" y="130" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1wkduk2_di" bpmnElement="Flow_1wkduk2">
-        <di:waypoint x="1130" y="480" />
-        <di:waypoint x="1262" y="480" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0m4unps_di" bpmnElement="Flow_0m4unps">
-        <di:waypoint x="330" y="188" />
-        <di:waypoint x="330" y="480" />
-        <di:waypoint x="1030" y="480" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

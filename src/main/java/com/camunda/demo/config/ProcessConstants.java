@@ -8,6 +8,7 @@ public class ProcessConstants {
     public static String VAR_KEY_INPUT = "input";
     public static String VAR_KEY_MAIL_TYPE = "MAIL_TYPE";
     public static String VAR_KEY_SUGGESTION = "selectedSuggestion";
-    public static String VAR_KEY_SUGGESTIONS = "suggestionList";
+    public static String VAR_KEY_SUGGESTIONLIST = "suggestionList";
+    public static String VAR_KEY_SUGGESTIONS = "suggestions";
 
 }
