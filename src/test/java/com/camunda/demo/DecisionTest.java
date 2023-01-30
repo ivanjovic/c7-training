@@ -10,9 +10,11 @@ import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.camunda.spin.Spin;
 import org.camunda.spin.json.SpinJsonNode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,22 +26,36 @@ public class DecisionTest {
 
     ProcessEngine processEngine;
 
-    @Test
-    @Disabled("Test does not work, there seems to be a problem with the input as variable")
-    void evaluteDecision() {
-
-        Deployment dmnDeployment = processEngine.getRepositoryService()
-                .createDeployment()
-                .addClasspathResource("console-suggestions.dmn")
-                .deploy();
-
-        log.info("##### Deployment with ID {} done", dmnDeployment.getId());
-
-        List<org.camunda.bpm.engine.repository.Deployment> deployments = processEngine.getRepositoryService()
+    @BeforeEach
+    void deploy() {
+        List<Deployment> deployments = processEngine.getRepositoryService()
                 .createDeploymentQuery()
                 .unlimitedList();
 
-        log.info("##### Deploments found {}", deployments.size());
+        if (CollectionUtils.isEmpty(deployments)) {
+            Deployment deployment = processEngine.getRepositoryService()
+                    .createDeployment()
+                    .addClasspathResource("console-suggestions.dmn")
+                    .deploy();
+            log.info("##### Deployment with ID {} done", deployment.getId());
+        }
+    }
+
+    @Test
+    void testDeployment() {
+        List<Deployment> deployments = processEngine.getRepositoryService()
+                .createDeploymentQuery()
+                .unlimitedList();
+
+        Assertions.assertThat(deployments)
+                .isNotNull()
+                .hasSize(1);
+    }
+
+    @Test
+    @Disabled("Test does not work, there seems to be a problem with the input as variable")
+    void evaluteDecision() {
+        assertSingleDeployment();
 
         var decisionService = processEngine.getDecisionService();
         SpinJsonNode json = Spin.JSON(getInputData());
@@ -60,5 +76,15 @@ public class DecisionTest {
                 .birthday(LocalDate.of(1990, 1, 1))
                 .email("test@test.de")
                 .build();
+    }
+
+    private void assertSingleDeployment() {
+        List<Deployment> deployments = processEngine.getRepositoryService()
+                .createDeploymentQuery()
+                .unlimitedList();
+
+        Assertions.assertThat(deployments)
+                .isNotNull()
+                .hasSize(1);
     }
 }
