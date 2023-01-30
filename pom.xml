@@ -10,10 +10,10 @@
     </parent>
 
     <groupId>com.camunda.demo</groupId>
-    <artifactId>camunda-spring-boot-learning</artifactId>
+    <artifactId>c7-training</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>camunda-spring-boot-learning</name>
-    <description>camunda-spring-boot-learning</description>
+    <description>C7 education trail</description>
 
     <properties>
         <java.version>17</java.version>
